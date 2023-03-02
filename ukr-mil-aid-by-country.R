@@ -16,6 +16,7 @@ mil.dat <- mil.dat %>%
                           "United States of America" = "United States",
                           "People's Republic of China" = "China"))
 
+# joining military data
 joined.dat <- left_join(ukr.aid.dat, mil.dat, by = "Country")
 
 # mutating summary df for visualization
@@ -32,7 +33,7 @@ world <- ne_countries(scale = "medium",
 # recoding country names
 world <- world %>%
   mutate(Country = recode(name, 
-                          "Dem. Rep. Korea" = "South Korea",
+                          "Korea" = "South Korea",
                           "Czech Rep." = "Czech Republic"))
 
 # creaing shape for ukraine
@@ -46,7 +47,8 @@ fin.dat <- left_join(new.dat, world, by = "Country")
 fin.dat <- st_as_sf(fin.dat)
 
 # color scale
-palAid <- colorNumeric(palette = "Blues", domain = fin.dat$aid.over.spend, 1:10)
+palAid <- colorNumeric(c("#9e9ed3", "#0f11d4"), domain = fin.dat$aid.over.spend, 1:10)
+palAid <- colorBin(c("#9e9ed3", "#0f11d4"), domain = fin.dat$aid.over.spend, bins = 10, na.color = "white")
 
 # popup form
 popup.form <- paste0("<center><b>Military Aid to Ukraine as % of Defense Budget: </b>", round(fin.dat$aid.over.spend * 100, digits = 2),"%")
@@ -54,16 +56,10 @@ popup.form <- paste0("<center><b>Military Aid to Ukraine as % of Defense Budget:
 # creating leaflet
 mil.plot <- leaflet(fin.dat) %>%
   setView(23, 35, 3) %>%
-  addProviderTiles(providers$CartoDB.Positron) %>%
+  addProviderTiles(providers$CartoDB.DarkMatter) %>%
   addPolygons(group = "Mil Data", fill = ~aid.over.spend, fillColor = ~palAid(aid.over.spend), weight = 4, 
-            opacity = 0, label = ~Country, popup = popup.form) %>%
+              opacity = 0, label = ~Country, popup = popup.form) %>%
   addPolygons(data = ukr.sf$geometry, fillColor = "orange", opacity = 0) %>%
-  addLegend("bottomleft", title = paste0("<center>Military Aid <br> to Ukraine by % of <br> 2022 National <br> Defense Budget <br>"), pal = palAid, values = ~aid.over.spend, opacity = .7, group = "Mil Dat", na.label = "",)
+  addLegend("bottomleft", title = paste0("<center>Military Aid <br> to Ukraine by % of <br> 2022 National <br> Defense Budget <br>"), pal = palAid, values = ~aid.over.spend, opacity = .7, group = "Mil Dat", na.label = "None",)
 
 mil.plot
-
-
-?addLegend
-
-
-

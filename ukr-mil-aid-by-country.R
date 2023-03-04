@@ -7,8 +7,8 @@ library(sf)
 # loading in data
 # These Ukraine aid data were taken from the https://www.ifw-kiel.de/topics/war-against-ukraine/ukraine-support-tracker/
 # and these defense budget data was collected at https://wisevoter.com/country-rankings/military-spending-by-country/
-ukr.aid.dat <- read_excel("/Users/dwaste/Desktop/London Politica/Military-Aid-Contributions-to-Ukraine/Ukraine_Support_Tracker.xlsx")
-mil.dat <- read_excel("/Users/dwaste/Desktop/London Politica/Military-Aid-Contributions-to-Ukraine/mil.spending.data.xlsx")
+ukr.aid.dat <- read_excel("/Users/dwaste/Desktop/London-Politica/Military-Aid-Contributions-to-Ukraine/Ukraine_Support_Tracker.xlsx")
+mil.dat <- read_excel("/Users/dwaste/Desktop/London-Politica/Military-Aid-Contributions-to-Ukraine/mil.spending.data.xlsx")
 
 # recoding country names to mactch
 mil.dat <- mil.dat %>%
@@ -56,10 +56,12 @@ popup.form <- paste0("<center><b>Military Aid to Ukraine as % of Defense Budget:
 # creating leaflet
 mil.plot <- leaflet(fin.dat) %>%
   setView(23, 35, 3) %>%
-  addProviderTiles(providers$CartoDB.DarkMatter) %>%
+  addProviderTiles(providers$CartoDB.PositronNoLabels) %>%
   addPolygons(group = "Mil Data", fill = ~aid.over.spend, fillColor = ~palAid(aid.over.spend), weight = 4, 
-              opacity = 0, label = ~Country, popup = popup.form) %>%
-  addPolygons(data = ukr.sf$geometry, fillColor = "orange", opacity = 0) %>%
-  addLegend("bottomleft", title = paste0("<center>Military Aid <br> to Ukraine by % of <br> 2022 National <br> Defense Budget <br>"), pal = palAid, values = ~aid.over.spend, opacity = .7, group = "Mil Dat", na.label = "None",)
+              opacity = 0, label = ~Country, popup = popup.form, fillOpacity = 1) %>%
+  addPolygons(data = ukr.sf$geometry, fillColor = "orange", opacity = 0, fillOpacity = 1) %>%
+  addLegend("bottomleft", title = paste0("<center>Military Aid <br> to Ukraine by % of <br> 2022 National <br> Defense Budget <br>"), pal = palAid, values = ~aid.over.spend, opacity = .7, group = "Mil Dat", na.label = "None")
 
 mil.plot
+
+?addPolygons
